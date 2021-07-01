@@ -1,0 +1,65 @@
+#include<bits/stdc++.h>
+using namespace std;
+int n,m,fa[100010],in[100010];
+vector<pair<int,int> >v;
+int find(int x){
+    return x==fa[x]?x:(fa[x]=find(fa[x]));
+}
+void merge(int x,int y){
+    fa[find(x)]=find(y);
+}
+int main(){
+	scanf("%d%d",&n,&m);
+	if(m>n){
+	   printf("NO\n");
+	   return 0;
+    }
+	if(n==1&&m==0){
+	   printf("YES\n1\n1 1\n");
+	   return 0;
+    }
+	for(int i=1;i<=n;i++)fa[i]=i;
+	for(int i=1;i<=m;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);
+		in[x]++,in[y]++;
+		if(in[x]>2||in[y]>2){
+			printf("NO\n");
+			return 0;
+		}
+		merge(x,y);
+	}
+	for(int i=1;i<=n;i++)
+	    for(int j=1;j<i;j++){
+	    	if(find(i)!=find(j)&&in[i]<2&&in[j]<2){
+	    		in[i]++;
+	    		in[j]++;
+	    		v.push_back(make_pair(j,i));
+	    		merge(i,j);
+			}
+		}
+	if(v.size()<n-m){
+		int fst=0,snd=0;
+		for(int i=1;i<=n;i++){
+			if(in[i]<2&&!fst)fst=i;
+			else if(in[i]<2&&!snd)snd=i;
+			else if(in[i]<2){
+				printf("NO\n");
+				return 0;
+			}
+		}
+		if(!fst||!snd){
+			printf("NO\n");
+			return 0;
+		}
+		v.push_back(make_pair(fst,snd));
+	}
+	for(int i=2;i<=n;i++){
+		if(find(i)!=find(1)){
+			printf("NO\n");
+			return 0;
+		}
+	}
+	printf("YES\n%d\n",n-m);
+	for(int i=0;i<v.size();i++)printf("%d %d\n",v[i].first,v[i].second);
+}

@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+ 
+using namespace std;
+ 
+class dsu {
+ public:
+  int n;
+  vector<int> p;
+ 
+  dsu(int n) : n(n) {
+    p.resize(n);
+    iota(p.begin(), p.end(), 0);
+  }
+ 
+  int get(int x) {
+    return x == p[x] ? x : p[x] = get(p[x]);
+  }
+ 
+  inline bool unite(int x, int y) {
+    x = get(x);
+    y = get(y);
+    if (x != y) {
+      p[x] = y;
+      return true;
+    }
+    return false;
+  }
+};
+ 
+int main() {
+  int n, m;
+  scanf("%d %d", &n, &m);
+  if (m > n) {
+    puts("NO");
+    return 0;
+  }
+  vector<int> a(n);
+  dsu ds(n);
+  for (int i = 0; i < m; ++i) {
+    int x, y;
+    scanf("%d %d", &x, &y);
+    --x; --y;
+    ++a[x]; ++a[y];
+    if (ds.get(x) == ds.get(y) && i != n - 1) {
+      puts("NO");
+      return 0;
+    }
+    ds.unite(x, y);
+  }
+  for (int i = 0; i < n; ++i) {
+    if (a[i] > 2) {
+      puts("NO");
+      return 0;
+    }
+  }
+  puts("YES");
+  printf("%d\n", n - m);
+  for (int i = 0; i < n; ++i) {
+    while (a[i] < 2) {
+      int t = i + (n != 1);
+      for (int j = t; j < n; ++j) {
+        if (a[j] < 2 && (n <= 2 || m + 1 == n || ds.get(i) != ds.get(j))) {
+          printf("%d %d\n", i + 1, j + 1);
+          ++m;
+          ++a[i]; ++a[j];
+          ds.unite(i, j);
+          break;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
